@@ -40,7 +40,7 @@ function renderCart() {
     link.addEventListener('click', (event) => {
       const productId = event.target.dataset.productId;
       removeCart(productId);
-      renderCart(); // Re-render the cart after removing an item
+      renderCart(); 
     });
   });
 }
