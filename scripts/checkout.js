@@ -10,13 +10,25 @@ function renderCart() {
   cart.forEach((item) => {
     const productId = item.productId;
     const matchingProduct = products.find((product) => product.id === productId);
+    const deliveryOptionId = item.deliveryOptionsId;
+    let deliveryOption;
+    deliveryOptions.forEach((option)=>{
+      if(option.id===deliveryOptionId)
+      {deliveryOption=option
+      }
+    });
+    const today = dayjs();
+    const deliveryDate = today.add(deliveryOption.deliveryDays, 'days');
+    const dateString = deliveryDate.format('dddd, MMMM D');
+
+
 
     if (matchingProduct) {
       checkoutHTML += `
 
       <div class="cart-item-container js-cart-item-container">
       <div class="delivery-date">
-        Delivery date: Tuesday, June 21
+        Delivery date:${dateString}
       </div>
 
       <div class="cart-item-details-grid">
@@ -42,6 +54,12 @@ function renderCart() {
             </span>
           </div>
         </div>
+        
+        <div class="delivery-options">
+          <div class="delivery-options-title">
+            Choose a delivery option:
+          </div>
+        ${deliveryOptionHTML(matchingProduct.id,productId)}
         </div>
       </div>
     </div>
@@ -65,71 +83,35 @@ function renderCart() {
   });
 }
 
-function deliveryOptionHTML(matchingProduct) {
-  const deliveryOptionsContainer = document.createElement('div'); // Create a container
-
+function deliveryOptionHTML(matchingProduct,cartItem) {
+  let deliveryOptionHTML =``
   deliveryOptions.forEach((deliveryoption) => {
     const today = dayjs();
-    const deliveryDate = today.add(7, 'days'); // Add 7 days for example
+    const deliveryDate = today.add(deliveryoption.deliveryDays, 'days');
     const dateString = deliveryDate.format('dddd, MMMM D');
     const pricestring = deliveryoption.priceCents === 0
     ? 'FREE'
-    :`${formatCurrency(deliveryoption.priceCents)}`
-
-    // Dynamically create the HTML string
-    const deliveryOptionHTML = `
-      <div class="delivery-options">
-        <div class="delivery-options-title">
-          Choose a delivery option:
-        </div>
+    :`${formatCurrency(deliveryoption.priceCents)}-`;
+    const ischecked = deliveryoption.id === cartItem.deliveryOptionId;
+    deliveryOptionHTML+= `
         <div class="delivery-option">
-          <input type="radio" checked
+          <input type="radio" ${ischecked?'checked':''}
             class="delivery-option-input"
-            name="delivery-option-${matchingProduct.id}">
+            name="delivery-option-${matchingProduct}">
           <div>
             <div class="delivery-option-date">
               ${dateString}  <!-- Replace with dynamic date -->
             </div>
             <div class="delivery-option-price">
-              ${pricestring} Shipping
+              $${pricestring} Shipping
             </div>
           </div>
         </div>
-        <div class="delivery-option">
-          <input type="radio"
-            class="delivery-option-input"
-            name="delivery-option-${matchingProduct.id}">
-          <div>
-            <div class="delivery-option-date">
-              ${today.add(deliveryoption.deliveryDays, 'days').format('dddd, MMMM D')}
-            </div>
-            <div class="delivery-option-price">
-              $4.99 - Shipping
-            </div>
-          </div>
-        </div>
-        <div class="delivery-option">
-          <input type="radio"
-            class="delivery-option-input"
-            name="delivery-option-${matchingProduct.id}">
-          <div>
-            <div class="delivery-option-date">
-              ${today.add(3, 'days').format('dddd, MMMM D')}
-            </div>
-            <div class="delivery-option-price">
-              $9.99 - Shipping
-            </div>
-          </div>
-        </div>
-      </div>
+        
     `;
-
-    // Append the generated HTML to the container
-    deliveryOptionsContainer.innerHTML += deliveryOptionHTML;
   });
+  return deliveryOptionHTML;
 
-  // Append the container to the target DOM element (replace 'your-target-element' with the actual element)
-  document.querySelector('#your-target-element').appendChild(deliveryOptionsContainer);
 }
 
 
