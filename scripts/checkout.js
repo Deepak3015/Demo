@@ -1,4 +1,4 @@
-import { cart, removeCart } from "../data/cart.js";
+import { cart, removeCart ,updateDeliveryOption} from "../data/cart.js";
 import { products } from "../data/products.js";
 import { formatCurrency } from "./utilis/money.js";
 import {deliveryOptions} from "../data/deliveryOptions.js"
@@ -94,7 +94,7 @@ function deliveryOptionHTML(matchingProduct,cartItem) {
     :`${formatCurrency(deliveryoption.priceCents)}-`;
     const ischecked = deliveryoption.id === cartItem.deliveryOptionId;
     deliveryOptionHTML+= `
-        <div class="delivery-option">
+        <div class="delivery-option js-delivery-option">
           <input type="radio" ${ischecked?'checked':''}
             class="delivery-option-input"
             name="delivery-option-${matchingProduct}">
@@ -113,6 +113,12 @@ function deliveryOptionHTML(matchingProduct,cartItem) {
   return deliveryOptionHTML;
 
 }
+document.querySelectorAll('.js-delivery-option').forEach((element)=>{
+  element.addEventListener('click',()=>{
+    updateDeliveryOption();
+  }
+  )
+})
 
 
 
