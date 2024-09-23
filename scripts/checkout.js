@@ -94,7 +94,8 @@ function deliveryOptionHTML(matchingProduct,cartItem) {
     :`${formatCurrency(deliveryoption.priceCents)}-`;
     const ischecked = deliveryoption.id === cartItem.deliveryOptionId;
     deliveryOptionHTML+= `
-        <div class="delivery-option js-delivery-option">
+        <div class="delivery-option js-delivery-option" data-product-id="${matchingProduct.id}"
+        date-delivery-option-id="${deliveryoption.id}">
           <input type="radio" ${ischecked?'checked':''}
             class="delivery-option-input"
             name="delivery-option-${matchingProduct}">
@@ -115,7 +116,8 @@ function deliveryOptionHTML(matchingProduct,cartItem) {
 }
 document.querySelectorAll('.js-delivery-option').forEach((element)=>{
   element.addEventListener('click',()=>{
-    updateDeliveryOption();
+    const {productId,deliveryOptionId} =element.dataset; 
+    updateDeliveryOption(productId,deliveryOptionId);
   }
   )
 })
